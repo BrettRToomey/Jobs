@@ -82,23 +82,34 @@ public final class Jobs {
     }
     
     public func start() throws {
+        guard !isRunning else {
+            return
+        }
+        
         isRunning = true
         try background {
-            while true {
+            runLoop: while true {
+                var shouldBreakout = false
+                
                 self.lock.locked {
-                    guard self.isRunning else {
-                        return
-                    }
-                    
+                    shouldBreakout = !self.isRunning
                     let time = Date().timeIntervalSince1970
+                    
                     for i in 0..<self.jobs.count {
                         if time - self.jobs[i].lastPerformed > self.jobs[i].interval {
                             self.jobs[i].perform(time)
                         }
                     }
                 }
-                self.sleep(for: 1)
+                
+                if shouldBreakout {
+                    break runLoop
+                } else {
+                    self.sleep(for: 1)
+                }
             }
+            
+            print("I've left the scope")
         }
     }
     

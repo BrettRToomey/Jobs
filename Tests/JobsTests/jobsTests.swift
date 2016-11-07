@@ -9,7 +9,8 @@ class JobsTests: XCTestCase {
             ("testAddingJob", testAddingJob),
             ("testRemovingJob", testRemovingJob),
             ("testRunningJob", testRunningJob),
-            ("testRunningTwoJobs", testRunningTwoJobs)
+            ("testRunningTwoJobs", testRunningTwoJobs),
+            ("testStoppingJobs", testStoppingJobs)
         ]
     }
     
