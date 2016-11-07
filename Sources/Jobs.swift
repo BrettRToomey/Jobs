@@ -5,9 +5,9 @@ public typealias Action = (Void) -> Void
 public typealias JobId = UInt
 
 public enum Duration {
-    case seconds(value: Double)
-    case days(value: Int)
-    case weeks(value: Int)
+    case seconds(Double)
+    case days(Int)
+    case weeks(Int)
 }
 
 extension Duration {

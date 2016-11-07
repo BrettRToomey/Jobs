@@ -18,18 +18,18 @@ class JobsTests: XCTestCase {
     }
     
     func testDurationsUnixTimestamp() {
-        let fiveSeconds = Duration.seconds(value: 5).unixTime
+        let fiveSeconds = Duration.seconds(5).unixTime
         XCTAssertEqual(fiveSeconds, 5.0)
         
-        let nineDays = Duration.days(value: 9).unixTime
+        let nineDays = Duration.days(9).unixTime
         XCTAssertEqual(nineDays, 777600.0)
         
-        let fourWeeks = Duration.weeks(value: 4).unixTime
+        let fourWeeks = Duration.weeks(4).unixTime
         XCTAssertEqual(fourWeeks, 2419200.0)
     }
     
     func testAddingJob() {
-        let id = Jobs.shared.add(interval: .seconds(value: 1)) {
+        let id = Jobs.shared.add(interval: .seconds(1)) {
         }
         
         XCTAssertEqual(Jobs.shared.jobs.count, 1, "should only be one job")
@@ -37,10 +37,10 @@ class JobsTests: XCTestCase {
     }
     
     func testRemovingJob() {
-        let firstJob = Jobs.shared.add(interval: .seconds(value: 1)) {
+        let firstJob = Jobs.shared.add(interval: .seconds(1)) {
         }
         
-        let _ = Jobs.shared.add(interval: .seconds(value: 1)) {
+        let _ = Jobs.shared.add(interval: .seconds(1)) {
         }
         
         Jobs.shared.remove(firstJob)
@@ -48,14 +48,14 @@ class JobsTests: XCTestCase {
     }
     
     func testDoNotRunOnInit() {
-        Jobs.shared.add(runOnInit: false, interval: .seconds(value: 1)) {
+        Jobs.shared.add(runOnInit: false, interval: .seconds(1)) {
         }
         XCTAssertNotEqual(Jobs.shared.jobs[0].lastPerformed, 0)
     }
     
     func testRunningJob() {
         var count = 0
-        Jobs.shared.add(interval: .seconds(value: 1)) {
+        Jobs.shared.add(interval: .seconds(1)) {
             count += 1
         }
         
@@ -69,11 +69,11 @@ class JobsTests: XCTestCase {
         var singleCount = 0
         var doubleCount = 0
         
-        Jobs.shared.add(interval: .seconds(value: 1)) {
+        Jobs.shared.add(interval: .seconds(1)) {
             singleCount += 1
         }
         
-        Jobs.shared.add(interval: .seconds(value: 2)) {
+        Jobs.shared.add(interval: .seconds(2)) {
             doubleCount += 1
         }
         
