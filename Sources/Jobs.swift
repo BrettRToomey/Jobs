@@ -108,8 +108,6 @@ public final class Jobs {
                     self.sleep(for: 1)
                 }
             }
-            
-            print("I've left the scope")
         }
     }
     
