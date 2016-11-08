@@ -118,10 +118,6 @@ public final class Jobs {
     }
     
     func sleep(for interval: Double) {
-        #if os(Linux)
-            Thread.sleepForTimeInterval(interval)
-        #else
-            Thread.sleep(forTimeInterval: interval)
-        #endif
+        Thread.sleep(forTimeInterval: interval)
     }
 }
