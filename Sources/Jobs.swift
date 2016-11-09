@@ -1,4 +1,5 @@
 import Core
+import Dispatch
 import Foundation
 
 public typealias Action = (Void) -> Void
@@ -45,10 +46,12 @@ public final class Jobs {
     public static let shared = Jobs()
     
     var jobs: [Performable] = []
-    let lock = Lock()
     var isRunning: Bool = false
     
     var idCounter: JobId = 0
+
+    let lock = Lock()
+    let workerQueue = DispatchQueue(label: "jobs-worker")
 
     @discardableResult public func add(
         runOnInit: Bool = true,
@@ -87,7 +90,7 @@ public final class Jobs {
         }
         
         isRunning = true
-        try background {
+        workerQueue.async {
             runLoop: while true {
                 var shouldBreakout = false
                 
