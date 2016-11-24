@@ -13,7 +13,7 @@ enum ShellError: Error {
 }
 
 @discardableResult
-func shell(path launchPath: String, args arguments: [String]) throws -> String {
+public func shell(path launchPath: String, args arguments: [String]) throws -> String {
     let process = Process()
     process.launchPath = launchPath
     process.arguments = arguments
@@ -36,7 +36,7 @@ func shell(path launchPath: String, args arguments: [String]) throws -> String {
 }
 
 @discardableResult
-func bash(command: String, arguments: [String]) throws -> String {
+public func bash(command: String, arguments: [String]) throws -> String {
     let whichPathForCommand = try shell(
         path: "/bin/bash",
         args: [ "-l", "-c", "which \(command)" ]
