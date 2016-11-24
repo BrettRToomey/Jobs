@@ -5,8 +5,7 @@
 import Foundation
 
 #if os(Linux)
-    typealias Process = NSProcess
-    typealias Pipe = NSPipe
+    typealias Process = Task
 #endif
 
 enum ShellError: Error {
