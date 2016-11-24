@@ -1,4 +1,6 @@
 # Jobs
+[![Language](https://img.shields.io/badge/Swift-3-brightgreen.svg)](http://swift.org) [![Build Status](https://travis-ci.org/BrettRToomey/Jobs.svg?branch=master)]
+
 A job system in Swift, for Swift
 
 ## Getting started
