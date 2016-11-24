@@ -28,24 +28,30 @@ extension Duration {
     }
 }
 
-struct Performable {
-    let id: JobId
+public struct Job {
+    public var name: String?
+    public let id: JobId
+    public var isRunning: Bool
+
     var lastPerformed: Double
     var interval: Double
     let action: Action
 }
 
-extension Performable {
-    mutating func perform(_ time: Double) {
+extension Job {
+    mutating func perform(_ time: Double, queue: DispatchQueue) {
         lastPerformed = time
-        action()
+        if isRunning {
+            action()
+        }
+        queue.asyncAfter(deadline: .now() + interval, execute: action)
     }
 }
 
 public final class Jobs {
     public static let shared = Jobs()
     
-    var jobs: [Performable] = []
+    var jobs: [Job] = []
     var isRunning: Bool = false
     
     var idCounter: JobId = 0
@@ -54,6 +60,7 @@ public final class Jobs {
     let workerQueue = DispatchQueue(label: "jobs-worker")
 
     @discardableResult public func add(
+        name: String? = nil,
         runOnInit: Bool = true,
         interval: Duration,
         action: @escaping Action
@@ -65,8 +72,10 @@ public final class Jobs {
             }
 
             jobs.append(
-                Performable(
+                Job(
+                    name: name,
                     id: idCounter,
+                    isRunning: true,
                     lastPerformed: runOnInit ? 0 : Date().timeIntervalSince1970,
                     interval: interval.unixTime,
                     action: action
@@ -100,7 +109,7 @@ public final class Jobs {
                     
                     for i in 0..<self.jobs.count {
                         if time - self.jobs[i].lastPerformed > self.jobs[i].interval {
-                            self.jobs[i].perform(time)
+                            self.jobs[i].perform(time, queue: self.workerQueue)
                         }
                     }
                 }
