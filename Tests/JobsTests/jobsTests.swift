@@ -3,16 +3,14 @@ import Foundation
 @testable import Jobs
 
 class JobsTests: XCTestCase {
-    static var allTests : [(String, (JobsTests) -> () throws -> Void)] {
-        return [
-            ("testDurationsUnixTimestamp", testDurationsUnixTimestamp),
-            ("testAddingJob", testAddingJob),
-            ("testRemovingJob", testRemovingJob),
-            ("testRunningJob", testRunningJob),
-            ("testRunningTwoJobs", testRunningTwoJobs),
-            ("testStoppingJobs", testStoppingJobs)
-        ]
-    }
+    static var allTests = [
+        ("testDurationsUnixTimestamp", testDurationsUnixTimestamp),
+        ("testAddingJob", testAddingJob),
+        ("testRemovingJob", testRemovingJob),
+        ("testRunningJob", testRunningJob),
+        ("testRunningTwoJobs", testRunningTwoJobs),
+        ("testStoppingJobs", testStoppingJobs)
+    ]
     
     override func setUp() {
         Jobs.shared.jobs.removeAll()
