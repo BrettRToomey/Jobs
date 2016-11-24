@@ -4,6 +4,11 @@
 */
 import Foundation
 
+#if os(Linux)
+    typealias Process = NSProcess
+    typealias Pipe = NSPipe
+#endif
+
 enum ShellError: Error {
     case failedToUnwrapOutput
 }
