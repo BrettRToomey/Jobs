@@ -4,7 +4,8 @@ import XCTest
 class ShellTests: XCTestCase {
     static var allTests = [
         ("testShellCommand", testShellCommand),
-        ("testBashCommand", testBashCommand)
+        ("testBashCommand", testBashCommand),
+        ("testJSONParser", testJSONParser)
     ]
     
     func testShellCommand() {
@@ -27,6 +28,7 @@ class ShellTests: XCTestCase {
     
     func testJSONParser() {
         do {
+            //will fail in XCode because of paths
             let _ = try parseJSONFile(path: "./Samples/MyJob.json")
         } catch {
             XCTFail(error.localizedDescription)
