@@ -5,7 +5,9 @@
 	//Scheduled to run every day at 08:00 (server time)
 	"schedule": {
 		"interval": "daily",
-		"time": "08:00"
+		"time": "08:00",
+		//UTC +10 (ISO 8601)
+		"timeoffset": "+10:00"
 	},
 
 	//jobs to be ran

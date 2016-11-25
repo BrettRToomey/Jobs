@@ -2,9 +2,6 @@ import Core
 import Dispatch
 import Foundation
 
-public typealias Action = (Void) -> Void
-public typealias JobId = UInt
-
 public enum Duration {
     case seconds(Double)
     case days(Int)
@@ -29,6 +26,9 @@ extension Duration {
 }
 
 public struct Job {
+    public typealias Action = (Void) -> Void
+    public typealias JobId = UInt
+
     public var name: String?
     public let id: JobId
     public var isRunning: Bool
@@ -54,7 +54,7 @@ public final class Jobs {
     var jobs: [Job] = []
     var isRunning: Bool = false
     
-    var idCounter: JobId = 0
+    var idCounter: Job.JobId = 0
 
     let lock = Lock()
     let workerQueue = DispatchQueue(label: "jobs-worker")
@@ -63,9 +63,9 @@ public final class Jobs {
         name: String? = nil,
         runOnInit: Bool = true,
         interval: Duration,
-        action: @escaping Action
-    ) -> JobId {
-        var id: JobId = 0
+        action: @escaping Job.Action
+    ) -> Job.JobId {
+        var id: Job.JobId = 0
         lock.locked {
             defer {
                 idCounter += 1
@@ -87,7 +87,7 @@ public final class Jobs {
         return id
     }
 
-    public func remove(_ id: JobId) {
+    public func remove(_ id: Job.JobId) {
         lock.locked {
             jobs = jobs.filter { $0.id != id }
         }

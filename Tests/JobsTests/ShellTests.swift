@@ -24,4 +24,12 @@ class ShellTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
+    
+    func testJSONParser() {
+        do {
+            let _ = try parseJSONFile(path: "./Samples/MyJob.json")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
 }
