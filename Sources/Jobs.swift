@@ -25,7 +25,9 @@ extension Duration {
     }
 }
 
+//TODO(Brett): polymorphism to make configuration-built jobs easier to handle.
 protocol Performable {
+    var interval: Double { get set }
     func perform()
 }
 
@@ -103,12 +105,23 @@ public final class Jobs {
         interval: Duration,
         autoStart: Bool = true,
         action: @escaping Job.Action,
-        onError: Job.ErrorCallback? = nil
-    ) -> Job? {
-        return nil
+        onError errorCallback: Job.ErrorCallback? = nil
+    ) -> Job {
+        let job = Job(
+            name: name,
+            interval: interval.unixTime,
+            action: action,
+            errorCallback: errorCallback
+        )
+
+        if autoStart {
+            shared.queue(job)
+        }
+
+        return job
     }
 
-    func queue(_ job: Job) {
+    func queue(_ job: Performable) {
         lock.locked {
             workerQueue.asyncAfter(deadline: .now() + job.interval, execute: job.perform)
         }
