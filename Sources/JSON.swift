@@ -2,11 +2,12 @@ import JSON
 
 extension JSON {
     func buildJob() throws -> Job? {
-        guard case JSON.object(let dict) = self else {
+        guard case JSON.object = self else {
             throw Error.badField("expected root object got: \(self)")
         }
         
-        //TODO(Brett): implementation
+        //TODO(Brett): waiting on new date interface before
+        //continuing implementation.
         return nil
     }
 }

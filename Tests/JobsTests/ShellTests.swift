@@ -18,7 +18,7 @@ class ShellTests: XCTestCase {
     
     func testBashCommand() {
         do {
-            let output = try bash(command: "echo", arguments: ["hello, world!"])
+            let output = try bash(command: "echo", args: ["hello, world!"])
             XCTAssertEqual(output, "hello, world!")
         } catch {
             XCTFail(error.localizedDescription)

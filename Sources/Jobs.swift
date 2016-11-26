@@ -2,6 +2,7 @@ import Core
 import Dispatch
 import Foundation
 
+/// Represents an amount of time.
 public enum Duration {
     case seconds(Double)
     case days(Int)
@@ -9,6 +10,7 @@ public enum Duration {
 }
 
 extension Duration {
+    /// Converts the enumeration representation of time into a `Double`.
     public var unixTime: Double {
         switch self {
         case .seconds(let count):
@@ -31,21 +33,26 @@ protocol Performable {
     func perform()
 }
 
+/// A scheduled, performable task.
 public class Job: Performable {
     public typealias Action = (Void) throws -> Void
     public typealias ErrorCallback = (Error) -> Void
 
+    /// The job's name.
     public var name: String?
+    
+    /// The current state of the job.
     public var isRunning: Bool
-
-    //TODO(Brett): currently not being used, will add with job batches.
-    var lastPerformed: Double
+    
+    /// Whether or not the job will retry on failure.
+    public var retryOnFail = true
+    
     var interval: Double
     let action: Action
     let errorCallback: ErrorCallback?
 
     let lock = Lock()
-
+    
     init(
         name: String?,
         interval: Double,
@@ -57,10 +64,10 @@ public class Job: Performable {
         self.action = action
         self.errorCallback = errorCallback
 
-        lastPerformed = 0
         isRunning = false
     }
 
+    /// Starts a pending job.
     public func start() {
         guard !isRunning else {
             return
@@ -70,6 +77,7 @@ public class Job: Performable {
         perform()
     }
 
+    /// Stops a job.
     public func stop() {
         lock.locked {
             isRunning = false
@@ -79,28 +87,48 @@ public class Job: Performable {
     func perform() {
         lock.locked {
             if isRunning {
+                let failedToRun: Bool
                 do {
                     try action()
+                    failedToRun = false
                 } catch {
                     if let errorCallback = errorCallback {
                         errorCallback(error)
                     }
+                    failedToRun = true
                 }
-
-                Jobs.shared.queue(self)
+                if failedToRun && retryOnFail {
+                    //make sure we leave the lock first.
+                    defer {
+                        Jobs.shared.queue(self, performNow: true)
+                    }
+                } else {
+                    Jobs.shared.queue(self)
+                }
             }
         }
     }
 }
 
 public final class Jobs {
+    //consider making `lock` and `workerQueue` static to remove singleton.
     static let shared = Jobs()
-    
-    var isRunning: Bool = false
 
     let lock = Lock()
     let workerQueue = DispatchQueue(label: "jobs-worker")
 
+    /**
+        Registers a new `Job` with the provided properties.
+     
+        - Parameters:
+            - name: The name of the job.
+            - interval: How often the job is performed.
+            - autoStart: Whether or not to start the job automatically.
+            - action: The action to perform.
+            - onError: An `Optional` error handler closure.
+     
+        - Returns: The instantiated `Job`.
+     */
     @discardableResult
     public static func add(
         name: String? = nil,
@@ -124,7 +152,17 @@ public final class Jobs {
         return job
     }
 
-    //enables shorthand for the closure when an error callback isn't required.
+    /**
+     Registers a new `Job` with the provided properties.
+     
+     - Parameters:
+     - name: The name of the job.
+     - interval: How often the job is performed.
+     - autoStart: Whether or not to start the job automatically.
+     - action: The action to perform.
+
+     - Returns: The instantiated `Job`.
+     */
     @discardableResult
     public static func add(
         name: String? = nil,
@@ -132,7 +170,13 @@ public final class Jobs {
         autoStart: Bool = true,
         action: @escaping Job.Action
     ) -> Job {
-        return add(name: name, interval: interval, autoStart: autoStart, action: action, onError: nil)
+        return add(
+            name: name,
+            interval: interval,
+            autoStart: autoStart,
+            action: action,
+            onError: nil
+        )
     }
 
     func queue(_ job: Performable, performNow: Bool = false) {

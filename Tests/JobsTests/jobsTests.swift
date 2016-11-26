@@ -7,9 +7,13 @@ class JobsTests: XCTestCase {
         ("testDurationsUnixTimestamp", testDurationsUnixTimestamp),
         ("testDurationExtensions", testDurationExtensions),
         ("testAddingJob", testAddingJob),
-        ("testAddingJobWithErrorCallback", testAddingJobWithErrorCallback),
-        ("testRunningJob", testRunningJob),
-        ("testRunningTwoJobs", testRunningTwoJobs)
+        ("testAddingJobErrorCallback", testAddingJobErrorCallback),
+        ("testJob", testJob),
+        ("testJobFailing", testJobFailing),
+        ("testJobTwoInstances", testJobTwoInstances),
+        ("testJobDelayed", testJobDelayed),
+        ("testJobStopped", testJobStopped),
+        ("testJobRerun", testJobRerun)
     ]
     
     func testDurationsUnixTimestamp() {
@@ -43,7 +47,7 @@ class JobsTests: XCTestCase {
         XCTAssertNil(job.errorCallback)
     }
     
-    func testAddingJobWithErrorCallback() {
+    func testAddingJobErrorCallback() {
         let job = Jobs.add(
             name: "MyJob", interval: 10.seconds, autoStart: false,
             action: {}, onError: { error in }
@@ -60,7 +64,7 @@ class JobsTests: XCTestCase {
         XCTAssertNotNil(job.errorCallback)
     }
     
-    func testRunningJob() {
+    func testJob() {
         var count = 0
         let job = Jobs.add(interval: 1.seconds) { count += 1 }
         
@@ -69,7 +73,35 @@ class JobsTests: XCTestCase {
         XCTAssertEqual(count, 5, "job should have ran 5 times.")
     }
     
-    func testRunningTwoJobs() {
+    func testJobFailing() {
+        enum Error: Swift.Error {
+            case testError
+        }
+        
+        var count = 0
+        
+        let job = Jobs.add(
+            interval: 1.seconds,
+            action: {
+                throw Error.testError
+            },
+            onError: { error in
+                guard case Error.testError = error else {
+                    XCTFail("Got the wrong error")
+                    return
+                }
+                
+                count += 1
+            }
+        )
+        
+        Thread.sleep(forTimeInterval: 2.0)
+        job.stop()
+        
+        XCTAssertGreaterThanOrEqual(count, 1, "job should have failed one or more times.")
+    }
+    
+    func testJobTwoInstances() {
         var jobOneCount = 0, jobTwoCount = 0
         Jobs.add(interval: 2.seconds) { jobOneCount += 1 }
         Jobs.add(interval: 1.seconds) { jobTwoCount += 1 }
@@ -77,5 +109,37 @@ class JobsTests: XCTestCase {
         Thread.sleep(forTimeInterval: 10.0)
         XCTAssertEqual(jobOneCount, 5, "the first job should have ran 5 times.")
         XCTAssertEqual(jobTwoCount, 10, "the second job should have ran 5 times.")
+    }
+    
+    func testJobDelayed() {
+        var count = 0
+        let job = Jobs.add(interval: 1.seconds, autoStart: false){ count += 1 }
+        
+        XCTAssertFalse(job.isRunning, "job should not have started.")
+        
+        job.start()
+        XCTAssertTrue(job.isRunning, "job should have started.")
+        
+        Thread.sleep(forTimeInterval: 3.0)
+        XCTAssertEqual(count, 3, "job should have ran 3 times.")
+    }
+    
+    func testJobStopped() {
+        let job = Jobs.add(interval: 1.seconds) {}
+        
+        XCTAssertTrue(job.isRunning, "job should have started.")
+        
+        job.stop()
+        
+        Thread.sleep(forTimeInterval: 2.0)
+        XCTAssertFalse(job.isRunning, "job should have been stopped.")
+    }
+    
+    func testJobRerun() {
+        let job = Jobs.add(interval: 1.seconds) {}
+        XCTAssertTrue(job.isRunning, "job should have started.")
+        
+        job.start()
+        XCTAssertTrue(job.isRunning, "job should still be running.")
     }
 }
