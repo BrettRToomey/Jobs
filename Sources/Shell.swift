@@ -9,9 +9,19 @@ import Foundation
 #endif
 
 enum ShellError: Error {
+    /// Thrown when the command didn't error but data failed to unwrap.
     case failedToUnwrapOutput
 }
 
+/**
+    Launch any process and log its output.
+ 
+    - Parameters:
+        - path: The path of the process to launch.
+        - args: The arguments to pass to the launched process.
+ 
+    - Returns: `STDOUT`
+ */
 @discardableResult
 public func shell(path launchPath: String, args arguments: [String]) throws -> String {
     let process = Process()
@@ -35,11 +45,21 @@ public func shell(path launchPath: String, args arguments: [String]) throws -> S
     return result
 }
 
+/**
+    Execute any `bash` command and log its output.
+ 
+    - Parameters:
+        - command: The command to be executed.
+        - args: The argumentes to pass to the interpreter.
+ 
+    - Returns: `STDOUT`
+ 
+ */
 @discardableResult
-public func bash(command: String, arguments: [String]) throws -> String {
+public func bash(command: String, args: [String]) throws -> String {
     let whichPathForCommand = try shell(
         path: "/bin/bash",
         args: [ "-l", "-c", "which \(command)" ]
     )
-    return try shell(path: whichPathForCommand, args: arguments)
+    return try shell(path: whichPathForCommand, args: args)
 }
