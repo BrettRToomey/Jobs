@@ -3,6 +3,15 @@
 
 A minimalistic job system in Swift, for Swift
 
+##### Table of Contents
+* [Getting started](#getting-started)
+* [Intervals](#intervals)
+  * [Syntax candy](#syntax-candy)
+* [Starting a job](#starting-a-job)
+* [Stopping a job](#stopping-a-job)
+* [Error handling](#error-handling)
+  * [Retry on failure](#retry-on-failure)
+
 ## Getting started 🚀
 Creating a new `Job` is as simple as:
 ```swift
