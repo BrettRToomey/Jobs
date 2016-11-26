@@ -38,6 +38,7 @@ public class Job: Performable {
     public var name: String?
     public var isRunning: Bool
 
+    //TODO(Brett): currently not being used, will add with job batches.
     var lastPerformed: Double
     var interval: Double
     let action: Action
@@ -100,6 +101,7 @@ public final class Jobs {
     let lock = Lock()
     let workerQueue = DispatchQueue(label: "jobs-worker")
 
+    @discardableResult
     public static func add(
         name: String? = nil,
         interval: Duration,
@@ -115,15 +117,30 @@ public final class Jobs {
         )
 
         if autoStart {
-            shared.queue(job)
+            job.isRunning = true
+            shared.queue(job, performNow: true)
         }
 
         return job
     }
 
-    func queue(_ job: Performable) {
+    //enables shorthand for the closure when an error callback isn't required.
+    @discardableResult
+    public static func add(
+        name: String? = nil,
+        interval: Duration,
+        autoStart: Bool = true,
+        action: @escaping Job.Action
+    ) -> Job {
+        return add(name: name, interval: interval, autoStart: autoStart, action: action, onError: nil)
+    }
+
+    func queue(_ job: Performable, performNow: Bool = false) {
         lock.locked {
-            workerQueue.asyncAfter(deadline: .now() + job.interval, execute: job.perform)
+            workerQueue.asyncAfter(
+                deadline: performNow ? .now() : .now() + job.interval,
+                execute: job.perform
+            )
         }
     }
 }
