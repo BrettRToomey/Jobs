@@ -1,0 +1,27 @@
+{
+	//Job named `MyJob`
+	"name": "MyJob",
+
+	//Scheduled to run every day at 08:00 (server time)
+	"schedule": {
+		"interval": "daily",
+		"time": "08:00",
+		//UTC +10 (ISO 8601)
+		"timeoffset": "+10:00"
+	},
+
+	//jobs to be ran
+	"jobs": [
+		//`bash` script with arguments ["I'm", "a", "script", "."]
+		{
+			"path": "/path/to/script.sh",
+			"args": ["I'm", "a", "script"]
+		},
+
+		//run `echo` with the argument "I can also be an executable."
+		{
+			"path": "echo",
+			"args": ["I can also be an executable."]
+		}
+	]
+}

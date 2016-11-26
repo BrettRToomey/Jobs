@@ -24,4 +24,17 @@ class ShellTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
+    
+    //commented out until file loader is moved to C and path system is working
+    //for xcode tests.
+    /*
+    func testJSONParser() {
+        do {
+            //will fail in XCode because of paths
+            let _ = try parseJSONFile(path: "./Samples/MyJob.json")
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+    */
 }
