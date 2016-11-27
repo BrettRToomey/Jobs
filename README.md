@@ -11,6 +11,12 @@ A minimalistic job system in Swift, for Swift
 * [Stopping a job](#stopping-a-job-)
 * [Error handling](#error-handling-)
   * [Retry on failure](#retry-on-failure-)
+  
+## Integration
+Update your `Package.swift` file.
+```swift
+.Package(url: "https://github.com/BrettRToomey/Jobs.git", majorVersion: 0)
+```
 
 ## Getting started 🚀
 Creating a new `Job` is as simple as:
