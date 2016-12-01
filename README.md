@@ -61,12 +61,44 @@ Jobs.add(
     }, 
     onError: { error in
         print("caught an error: \(error)")
+        return RecoverStrategy.default
     }
 )
 ```
 
 #### Retry on failure ⭕️
-By default, jobs are ran again on error. If you wish to change this behavior then set the following attribute: 
+By default, jobs will be attempted again after a five second delay. If you wish to override this behavior you must first implement an `onError` handler and return one of the following `RecoveryStrategy` cases.
 ```swift
-myJobName.retryOnFail = false
+.none //do not retry
+.default //retry after 5 seconds
+.retry(after: Duration) //retry after specified duration
+```
+Here's a small sample:
+```swift 
+enum Error: Swift.Error {
+  case recoverable
+  case abort
+}
+
+Jobs.add(
+    interval: 1.days,
+    action: {
+        //...
+    }, 
+    onError: { error in
+        switch error {
+        //we cannot recover from this
+        case .abort:
+            //do not retry
+            return .none
+
+        //we can recover from this
+        case .recoverable:
+            //... recovery code
+
+            //try again in 15 seconds
+            return .retry(after: 15.seconds)
+        }
+    }
+)
 ```
