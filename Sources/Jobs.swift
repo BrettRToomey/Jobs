@@ -67,9 +67,6 @@ public class Job: Performable {
     /// The current state of the job.
     public var isRunning: Bool
     
-    /// Whether or not the job will retry on failure.
-    public var retryOnFail = true
-    
     var interval: Double
     let action: Action
     let errorCallback: ErrorCallback?
