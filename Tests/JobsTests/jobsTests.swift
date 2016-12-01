@@ -50,7 +50,7 @@ class JobsTests: XCTestCase {
     func testAddingJobErrorCallback() {
         let job = Jobs.add(
             name: "MyJob", interval: 10.seconds, autoStart: false,
-            action: {}, onError: { error in }
+            action: {}, onError: { _ in return .none }
         )
         
         guard let name = job.name else {
@@ -88,10 +88,11 @@ class JobsTests: XCTestCase {
             onError: { error in
                 guard case Error.testError = error else {
                     XCTFail("Got the wrong error")
-                    return
+                    return .none
                 }
                 
                 count += 1
+                return .none
             }
         )
         

@@ -27,6 +27,29 @@ extension Duration {
     }
 }
 
+public enum RecoverStrategy {
+    case `none`
+    case `default`
+    case retry(after: Duration)
+}
+
+extension RecoverStrategy: Equatable {
+    public static func ==(lhs: RecoverStrategy, rhs: RecoverStrategy) -> Bool {
+        switch (lhs, rhs) {
+        case (.none, .none): 
+            return true
+        case (.default, .default):
+            return true
+        //we don't care about the times being equivalent.
+        case (.retry, .retry):
+            return true
+
+        default:
+            return false
+        }
+    }
+}
+
 //TODO(Brett): polymorphism to make configuration-built jobs easier to handle.
 protocol Performable {
     var interval: Double { get set }
@@ -36,7 +59,7 @@ protocol Performable {
 /// A scheduled, performable task.
 public class Job: Performable {
     public typealias Action = (Void) throws -> Void
-    public typealias ErrorCallback = (Error) -> Void
+    public typealias ErrorCallback = (Error) -> RecoverStrategy
 
     /// The job's name.
     public var name: String?
@@ -86,24 +109,29 @@ public class Job: Performable {
 
     func perform() {
         lock.locked {
-            if isRunning {
-                let failedToRun: Bool
-                do {
-                    try action()
-                    failedToRun = false
-                } catch {
-                    if let errorCallback = errorCallback {
-                        errorCallback(error)
-                    }
-                    failedToRun = true
+            guard isRunning else {
+                return
+            }
+
+            do {
+                try action()
+                Jobs.shared.queue(self)
+            } catch {
+                guard
+                    let recoveryStrategy = errorCallback?(error),
+                    recoveryStrategy != .default
+                else {
+                    //default recovery strategy
+                    Jobs.shared.queue(self, in: 5.seconds)
+                    return
                 }
-                if failedToRun && retryOnFail {
-                    //make sure we leave the lock first.
-                    defer {
-                        Jobs.shared.queue(self, performNow: true)
-                    }
-                } else {
-                    Jobs.shared.queue(self)
+                
+                switch recoveryStrategy {
+                case .retry(let deadline):
+                    Jobs.shared.queue(self, in: deadline)    
+
+                default:
+                    break
                 }
             }
         }
@@ -177,6 +205,13 @@ public final class Jobs {
             action: action,
             onError: nil
         )
+    }
+
+    func queue(_ job: Performable, in deadline: Duration) {
+        let deadline: DispatchTime = .now() + deadline.unixTime
+        lock.locked {
+            workerQueue.asyncAfter(deadline: deadline, execute: job.perform)
+        }
     }
 
     func queue(_ job: Performable, performNow: Bool = false) {
