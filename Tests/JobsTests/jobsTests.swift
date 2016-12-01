@@ -113,16 +113,12 @@ class JobsTests: XCTestCase {
     }
     
     func testJobDelayed() {
-        var count = 0
-        let job = Jobs.add(interval: 1.seconds, autoStart: false){ count += 1 }
+        let job = Jobs.add(interval: 1.seconds, autoStart: false){}
         
         XCTAssertFalse(job.isRunning, "job should not have started.")
         
         job.start()
         XCTAssertTrue(job.isRunning, "job should have started.")
-        
-        Thread.sleep(forTimeInterval: 3.0)
-        XCTAssertEqual(count, 3, "job should have ran 3 times.")
     }
     
     func testJobStopped() {
