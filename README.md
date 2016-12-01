@@ -1,5 +1,7 @@
 # Jobs
-[![Language](https://img.shields.io/badge/Swift-3-brightgreen.svg)](http://swift.org) ![Build Status](https://travis-ci.org/BrettRToomey/Jobs.svg?branch=master)[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/BrettRToomey/Jobs/master/LICENSE.md)
+[![Language](https://img.shields.io/badge/Swift-3-brightgreen.svg)](http://swift.org) ![Build Status](https://travis-ci.org/BrettRToomey/Jobs.svg?branch=master)
+[![codecov](https://codecov.io/gh/BrettRToomey/Jobs/branch/master/graph/badge.svg)](https://codecov.io/gh/BrettRToomey/Jobs)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/BrettRToomey/Jobs/master/LICENSE.md)
 
 A minimalistic job system in Swift, for Swift
 
@@ -11,18 +13,12 @@ A minimalistic job system in Swift, for Swift
 * [Stopping a job](#stopping-a-job-)
 * [Error handling](#error-handling-)
   * [Retry on failure](#retry-on-failure-)
-  
-## Integration
-Update your `Package.swift` file.
-```swift
-.Package(url: "https://github.com/BrettRToomey/Jobs.git", majorVersion: 0)
-```
 
 ## Getting started 🚀
 Creating a new `Job` is as simple as:
 ```swift
 Jobs.add(interval: .seconds(4)) {
-    print("👋 I'm printed every 4 seconds!")
+    print("👋 I'm printed 4 times!")
 }
 ```
 
