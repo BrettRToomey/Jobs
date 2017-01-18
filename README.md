@@ -60,6 +60,21 @@ Giving up has never been so easy!
 job.stop()
 ```
 
+## One-off jobs 
+If you just want to asynchronously run a job, but not repeat it you can use the `oneoff` functions.
+```swift
+Jobs.oneoff {
+    print("Sadly, I'm not a phoenix.")            
+}
+```
+
+How about waiting a little?
+```swift
+Jobs.oneoff(delay: 10.seconds) {
+    print("I was delayed by 10 seconds.")
+}
+```
+
 ## Error handling ❌
 Sometimes jobs can fail, that's okay, we have you covered.
 ```swift

@@ -243,8 +243,15 @@ public final class Jobs {
     
     public static func oneoff(
         delay: Duration = 0.seconds,
+        action: @escaping Job.Action
+    ) {
+        oneoff(delay: delay, action: action, onError: nil)
+    }
+    
+    public static func oneoff(
+        delay: Duration = 0.seconds,
         action: @escaping Job.Action,
-        onError errorHandler: ((Error) -> Void)? = nil
+        onError errorHandler: ((Error) -> Void)?
     ) {
         let workItem = DispatchWorkItem {
             do {
