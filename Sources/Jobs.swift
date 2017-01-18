@@ -178,15 +178,15 @@ public final class Jobs {
     }
 
     /**
-     Registers a new `Job` with the provided properties.
+        Registers a new `Job` with the provided properties.
      
-     - Parameters:
-     - name: The name of the job.
-     - interval: How often the job is performed.
-     - autoStart: Whether or not to start the job automatically.
-     - action: The action to perform.
+        - Parameters:
+            - name: The name of the job.
+            - interval: How often the job is performed.
+            - autoStart: Whether or not to start the job automatically.
+            - action: The action to perform.
 
-     - Returns: The instantiated `Job`.
+        - Returns: The instantiated `Job`.
      */
     @discardableResult
     public static func add(
@@ -203,7 +203,104 @@ public final class Jobs {
             onError: nil
         )
     }
+    
+    @discardableResult
+    public static func delay(
+        name: String? = nil,
+        by deadline: Duration,
+        interval: Duration,
+        action: @escaping Job.Action,
+        onError errorCallback: Job.ErrorCallback? = nil
+    ) -> Job {
+        let job = Job(
+            name: name,
+            interval: interval.unixTime,
+            action: action,
+            errorCallback: errorCallback
+        )
+        
+        job.isRunning = true
+        shared.queue(job, in: deadline)
+        
+        return job
+    }
+    
+    @discardableResult
+    public static func delay(
+        name: String? = nil,
+        by deadline: Duration,
+        interval: Duration,
+        action: @escaping Job.Action
+    ) -> Job {
+        return delay(
+            name: name,
+            by: deadline,
+            interval: interval,
+            action: action,
+            onError: nil
+        )
+    }
+    
+    public static func oneoff(
+        delay: Duration = 0.seconds,
+        action: @escaping Job.Action
+    ) {
+        oneoff(delay: delay, action: action, onError: nil)
+    }
+    
+    public static func oneoff(
+        delay: Duration = 0.seconds,
+        action: @escaping Job.Action,
+        onError errorHandler: ((Error) -> Void)?
+    ) {
+        let workItem = DispatchWorkItem {
+            do {
+                try action()
+            } catch {
+                errorHandler?(error)
+            }
+        }
+        
+        shared.queue(workItem, deadline: delay)
+    }
+    
+    //TODO(Brett):
+    @discardableResult
+    static func schedule(
+        _ days: Set<Day>,
+        at: Time,
+        action: @escaping Job.Action
+    ) {
+        
+    }
 
+    //TODO(Brett):
+    @discardableResult
+    public static func schedule(
+        _ days: CountableRange<Day>,
+        at: Time,
+        action: @escaping Job.Action
+    ) {
+        
+    }
+    
+    //TODO(Brett):
+    @discardableResult
+    static func schedule(
+        _ days: CountableClosedRange<Day>,
+        at: Time,
+        action: @escaping Job.Action
+    ) {
+        
+    }
+    
+    func queue(_ dispatchItem: DispatchWorkItem, deadline: Duration) {
+        let deadline: DispatchTime = .now() + deadline.unixTime
+        lock.locked {
+            workerQueue.asyncAfter(deadline: deadline, execute: dispatchItem)
+        }
+    }
+    
     func queue(_ job: Performable, in deadline: Duration) {
         let deadline: DispatchTime = .now() + deadline.unixTime
         lock.locked {

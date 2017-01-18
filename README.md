@@ -1,6 +1,7 @@
 # Jobs
 [![Language](https://img.shields.io/badge/Swift-3-brightgreen.svg)](http://swift.org) ![Build Status](https://travis-ci.org/BrettRToomey/Jobs.svg?branch=master)
 [![codecov](https://codecov.io/gh/BrettRToomey/Jobs/branch/master/graph/badge.svg)](https://codecov.io/gh/BrettRToomey/Jobs)
+[![codebeat badge](https://codebeat.co/badges/1a9e0ad5-33d5-4bbc-a229-1691250f69d3)](https://codebeat.co/projects/github-com-brettrtoomey-jobs)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/BrettRToomey/Jobs/master/LICENSE.md)
 
 A minimalistic job system in Swift, for Swift
@@ -24,7 +25,7 @@ Update your `Package.swift` file.
 Creating a new `Job` is as simple as:
 ```swift
 Jobs.add(interval: .seconds(4)) {
-    print("👋 I'm printed 4 times!")
+    print("👋 I'm printed every 4 seconds!")
 }
 ```
 
@@ -57,6 +58,21 @@ job.start()
 Giving up has never been so easy!
 ```swift
 job.stop()
+```
+
+## One-off jobs 
+If you just want to asynchronously run a job, but not repeat it you can use the `oneoff` functions.
+```swift
+Jobs.oneoff {
+    print("Sadly, I'm not a phoenix.")            
+}
+```
+
+How about waiting a little?
+```swift
+Jobs.oneoff(delay: 10.seconds) {
+    print("I was delayed by 10 seconds.")
+}
 ```
 
 ## Error handling ❌
