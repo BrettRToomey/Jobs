@@ -169,10 +169,8 @@ public final class Jobs {
             errorCallback: errorCallback
         )
 
-        if autoStart {
-            job.isRunning = true
-            shared.queue(job, performNow: true)
-        }
+        job.isRunning = true
+        shared.queue(job, performNow: autoStart)
 
         return job
     }
