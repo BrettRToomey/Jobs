@@ -265,7 +265,7 @@ public final class Jobs {
     }
     
     //TODO(Brett):
-    @discardableResult
+	//@discardableResult
     static func schedule(
         _ days: Set<Day>,
         at: Time,
@@ -275,7 +275,7 @@ public final class Jobs {
     }
 
     //TODO(Brett):
-    @discardableResult
+    //@discardableResult
     public static func schedule(
         _ days: CountableRange<Day>,
         at: Time,
@@ -285,7 +285,7 @@ public final class Jobs {
     }
     
     //TODO(Brett):
-    @discardableResult
+    //@discardableResult
     static func schedule(
         _ days: CountableClosedRange<Day>,
         at: Time,

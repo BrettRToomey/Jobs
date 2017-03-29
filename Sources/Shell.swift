@@ -4,9 +4,10 @@
 */
 import Foundation
 
-#if os(Linux)
-    typealias Process = Task
+#if !swift(>=3.1) && os(Linux)
+	typealias Process = Task
 #endif
+
 
 enum ShellError: Error {
     /// Thrown when the command didn't error but data failed to unwrap.
