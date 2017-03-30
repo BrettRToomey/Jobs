@@ -1,4 +1,3 @@
-import Core
 import Dispatch
 import Foundation
 
@@ -71,7 +70,7 @@ public class Job: Performable {
     let action: Action
     let errorCallback: ErrorCallback?
 
-    let lock = Lock()
+    let lock = NSLock()
     
     init(
         name: String?,
@@ -99,37 +98,43 @@ public class Job: Performable {
 
     /// Stops a job.
     public func stop() {
-        lock.locked {
-            isRunning = false
+        lock.lock()
+        defer {
+            lock.unlock()
         }
+        
+        isRunning = false
     }
 
     func perform() {
-        lock.locked {
-            guard isRunning else {
-                return
-            }
-
-            do {
-                try action()
-                Jobs.shared.queue(self)
-            } catch {
-                guard
-                    let recoveryStrategy = errorCallback?(error),
-                    recoveryStrategy != .default
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+        
+        guard isRunning else {
+            return
+        }
+        
+        do {
+            try action()
+            Jobs.shared.queue(self)
+        } catch {
+            guard
+                let recoveryStrategy = errorCallback?(error),
+                recoveryStrategy != .default
                 else {
                     //default recovery strategy
                     Jobs.shared.queue(self, in: 5.seconds)
                     return
-                }
+            }
+            
+            switch recoveryStrategy {
+            case .retry(let deadline):
+                Jobs.shared.queue(self, in: deadline)
                 
-                switch recoveryStrategy {
-                case .retry(let deadline):
-                    Jobs.shared.queue(self, in: deadline)    
-
-                default:
-                    break
-                }
+            default:
+                break
             }
         }
     }
@@ -139,7 +144,7 @@ public final class Jobs {
     //consider making `lock` and `workerQueue` static to remove singleton.
     static let shared = Jobs()
 
-    let lock = Lock()
+    let lock = NSLock()
     let workerQueue = DispatchQueue(label: "jobs-worker")
 
     /**
@@ -296,24 +301,33 @@ public final class Jobs {
     
     func queue(_ dispatchItem: DispatchWorkItem, deadline: Duration) {
         let deadline: DispatchTime = .now() + deadline.unixTime
-        lock.locked {
-            workerQueue.asyncAfter(deadline: deadline, execute: dispatchItem)
+        lock.lock()
+        defer {
+            lock.unlock()
         }
+        
+        workerQueue.asyncAfter(deadline: deadline, execute: dispatchItem)
     }
     
     func queue(_ job: Performable, in deadline: Duration) {
         let deadline: DispatchTime = .now() + deadline.unixTime
-        lock.locked {
-            workerQueue.asyncAfter(deadline: deadline, execute: job.perform)
+        lock.lock()
+        defer {
+            lock.unlock()
         }
+        
+        workerQueue.asyncAfter(deadline: deadline, execute: job.perform)
     }
 
     func queue(_ job: Performable, performNow: Bool = false) {
-        lock.locked {
-            workerQueue.asyncAfter(
-                deadline: performNow ? .now() : .now() + job.interval,
-                execute: job.perform
-            )
+        lock.lock()
+        defer {
+            lock.unlock()
         }
+        
+        workerQueue.asyncAfter(
+            deadline: performNow ? .now() : .now() + job.interval,
+            execute: job.perform
+        )
     }
 }

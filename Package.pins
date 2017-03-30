@@ -1,0 +1,24 @@
+{
+  "autoPin": true,
+  "pins": [
+    {
+      "package": "Bits",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor/bits.git",
+      "version": "1.0.0-beta1"
+    },
+    {
+      "package": "Core",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor/core.git",
+      "version": "2.0.0-beta1"
+    },
+    {
+      "package": "Debugging",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor/debugging.git",
+      "version": "1.0.0-beta1"
+    }
+  ],
+  "version": 1
+}
