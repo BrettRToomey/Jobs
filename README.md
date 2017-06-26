@@ -18,7 +18,7 @@ A minimalistic job system in Swift, for Swift
 ## Integration
 Update your `Package.swift` file.
 ```swift
-.Package(url: "https://github.com/BrettRToomey/Jobs.git", majorVersion: 0)
+.Package(url: "https://github.com/BrettRToomey/Jobs.git", majorVersion: 1)
 ```
 
 ## Getting started 🚀
