@@ -30,7 +30,7 @@ Jobs.add(interval: .seconds(4)) {
 ```
 
 ## Intervals ⏲
-The `Duration` enumeration currently supports `.seconds`, `.days` and `.weeks`.
+The `Duration` enumeration currently supports `.seconds`, `hours`, `.days` and `.weeks`.
 ```swift
 Jobs.add(interval: .days(5)) {
     print("See you every 5 days.")
@@ -40,6 +40,7 @@ Jobs.add(interval: .days(5)) {
 It's possible to create a `Duration` from an `Int` and a `Double`.
 ```swift
 10.seconds // `Duration.seconds(10)`
+4.hours // `Duration.hours(4)`
 2.days // `Duration.days(2)`
 3.weeks // `Duration.weeks(3)`
 ```
