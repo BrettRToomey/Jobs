@@ -20,6 +20,9 @@ class JobsTests: XCTestCase {
         let fiveSeconds = Duration.seconds(5).unixTime
         XCTAssertEqual(fiveSeconds, 5.0)
         
+        let threeHours = Duration.hours(3).unixTime
+        XCTAssertEqual(threeHours, 10800.0)
+        
         let nineDays = Duration.days(9).unixTime
         XCTAssertEqual(nineDays, 777600.0)
         
@@ -30,6 +33,9 @@ class JobsTests: XCTestCase {
     func testDurationExtensions() {
         let seconds = 2.seconds
         XCTAssertEqual(seconds.unixTime, 2.0)
+        
+        let hours = 3.hours
+        XCTAssertEqual(hours.unixTime, 10800.0)
 
         let days = 9.days
         XCTAssertEqual(days.unixTime, 777600.0)
