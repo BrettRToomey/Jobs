@@ -62,7 +62,7 @@ protocol Performable {
 
 /// A scheduled, performable task.
 public class Job: Performable {
-    public typealias Action = (Void) throws -> Void
+    public typealias Action = () throws -> Void
     public typealias ErrorCallback = (Error) -> RecoverStrategy
 
     /// The job's name.
