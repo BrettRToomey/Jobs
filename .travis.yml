@@ -8,9 +8,7 @@ dist: trusty
 osx_image: xcode9
 before_install:
     - if [ $TRAVIS_OS_NAME == "osx" ]; then
-            brew tap vapor/tap;
-            brew update;
-            brew install vapor;
+            brew install vapor/tap/vapor;
         else
             eval "$(curl -sL https://apt.vapor.sh)";
             sudo apt-get install vapor;
@@ -22,11 +20,11 @@ script:
     - swift build -c release
     - swift test
     - if [ $TRAVIS_OS_NAME != "osx"]; then
-            sudo apt-get remove vapor
-            sudo apt-get install swift=3.1.1
-            swift build
-            swift build -c release
-            swift test
+            sudo apt-get remove vapor;
+            sudo apt-get install swift=3.1.1;
+            swift build;
+            swift build -c release;
+            swift test;
         fi
 
 after_success:
