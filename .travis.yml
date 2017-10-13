@@ -1,10 +1,33 @@
 os:
-  - linux
-  - osx
+    - linux
+    - osx
 language: generic
 sudo: required
 dist: trusty
-osx_image: xcode8
+
+osx_image: xcode9
+before_install:
+    - if [ $TRAVIS_OS_NAME == "osx" ]; then
+            brew tap vapor/tap;
+            brew update;
+            brew install vapor;
+        else
+            eval "$(curl -sL https://apt.vapor.sh)";
+            sudo apt-get install vapor;
+            sudo chmod -R a+rx /usr/;
+        fi
+
 script:
-  - eval "$(curl -sL https://swift.vapor.sh/ci)"
-  - eval "$(curl -sL https://swift.vapor.sh/codecov)"
+    - swift build
+    - swift build -c release
+    - swift test
+    - if [ $TRAVIS_OS_NAME != "osx"]; then
+            sudo apt-get remove vapor
+            sudo apt-get install swift=3.1.1
+            swift build
+            swift build -c release
+            swift test
+        fi
+
+after_success:
+    - eval "$(curl -sL https://raw.githubusercontent.com/vapor-community/swift/master/codecov)"

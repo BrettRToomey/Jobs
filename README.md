@@ -1,5 +1,5 @@
 # Jobs
-[![Language](https://img.shields.io/badge/Swift-3-brightgreen.svg)](http://swift.org) ![Build Status](https://travis-ci.org/BrettRToomey/Jobs.svg?branch=master)
+[![Language](https://img.shields.io/badge/Swift-4-brightgreen.svg)](http://swift.org) ![Build Status](https://travis-ci.org/BrettRToomey/Jobs.svg?branch=master)
 [![codecov](https://codecov.io/gh/BrettRToomey/Jobs/branch/master/graph/badge.svg)](https://codecov.io/gh/BrettRToomey/Jobs)
 [![codebeat badge](https://codebeat.co/badges/1a9e0ad5-33d5-4bbc-a229-1691250f69d3)](https://codebeat.co/projects/github-com-brettrtoomey-jobs)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/BrettRToomey/Jobs/master/LICENSE.md)
@@ -18,7 +18,7 @@ A minimalistic job system in Swift, for Swift
 ## Integration
 Update your `Package.swift` file.
 ```swift
-.Package(url: "https://github.com/BrettRToomey/Jobs.git", majorVersion: 1)
+.package(url: "https://github.com/BrettRToomey/Jobs.git", from: "1.1.1")
 ```
 
 ## Getting started 🚀
@@ -61,7 +61,7 @@ Giving up has never been so easy!
 job.stop()
 ```
 
-## One-off jobs 
+## One-off jobs
 If you just want to asynchronously run a job, but not repeat it you can use the `oneoff` functions.
 ```swift
 Jobs.oneoff {
@@ -83,7 +83,7 @@ Jobs.add(
     interval: 10.seconds,
     action: {
         throw Error.someError
-    }, 
+    },
     onError: { error in
         print("caught an error: \(error)")
         return RecoverStrategy.default
@@ -99,7 +99,7 @@ By default, jobs will be attempted again after a five second delay. If you wish 
 .retry(after: Duration) //retry after specified duration
 ```
 Here's a small sample:
-```swift 
+```swift
 enum Error: Swift.Error {
   case recoverable
   case abort
@@ -109,7 +109,7 @@ Jobs.add(
     interval: 1.days,
     action: {
         //...
-    }, 
+    },
     onError: { error in
         switch error {
         //we cannot recover from this
