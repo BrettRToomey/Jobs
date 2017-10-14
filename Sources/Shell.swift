@@ -40,7 +40,11 @@ public func shell(path launchPath: String, args arguments: [String]) throws -> S
     
     if result.characters.count > 0 {
         let lastIndex = result.index(before: result.endIndex)
-        return result[result.startIndex ..< lastIndex]
+        #if swift(>=4)
+            return String(result[result.startIndex ..< lastIndex])
+        #else
+            return result[result.startIndex ..< lastIndex]
+        #endif
     }
     
     return result
