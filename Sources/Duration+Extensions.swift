@@ -3,6 +3,11 @@ extension Int {
 	public var seconds: Duration {
 		return .seconds(Double(self))
 	}
+    
+    /// Converts the integer into an enum representation of minutes.
+    public var minutes: Duration {
+        return .minutes(self)
+    }
 	
     /// Converts the integer into an enum representation of hours.    
 	public var hours: Duration {

@@ -4,6 +4,7 @@ import Foundation
 /// Represents an amount of time.
 public enum Duration {
     case seconds(Double)
+    case minutes(Int)
     case hours(Int)
     case days(Int)
     case weeks(Int)
@@ -15,6 +16,10 @@ extension Duration {
         switch self {
         case .seconds(let count):
             return count
+            
+        case .minutes(let count):
+          let secondsInMinute = 60
+          return Double(count * secondsInMinute)
             
         case .hours(let count):
           let secondsInHour = 3_600
