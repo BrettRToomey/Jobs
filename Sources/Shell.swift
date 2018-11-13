@@ -38,7 +38,7 @@ public func shell(path launchPath: String, args arguments: [String]) throws -> S
         throw ShellError.failedToUnwrapOutput
     }
     
-    if result.characters.count > 0 {
+    if !result.isEmpty {
         let lastIndex = result.index(before: result.endIndex)
         #if swift(>=4)
             return String(result[result.startIndex ..< lastIndex])
